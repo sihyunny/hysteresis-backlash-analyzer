@@ -14,3 +14,4 @@ A Python GUI application for analyzing hysteresis curves and measuring backlash 
 ## Author
 
 Developed by VDS
+<img width="3538" height="2576" alt="2025 12 29_11h04m00s-teraterm" src="https://github.com/user-attachments/assets/8c3e282d-2fcc-4f2d-967a-cc1f566fb760" />
