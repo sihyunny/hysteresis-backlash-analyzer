@@ -73,8 +73,12 @@ def find_hysteresis_loop_v2(x_data, y_data):
 
 def calculate_backlash(file_path):
     """히스테리시스 루프를 자동 감지하여 백래쉬 계산"""
-    # 엑셀 파일 읽기
-    df = pd.read_excel(file_path, header=None)
+    # 파일 확장자에 따라 적절한 함수로 읽기
+    file_ext = os.path.splitext(file_path)[1].lower()
+    if file_ext == '.csv':
+        df = pd.read_csv(file_path, header=None)
+    else:  # .xlsx, .xls 등
+        df = pd.read_excel(file_path, header=None)
 
     # A열(0번 열)이 0인 행들을 제거
     df = df[df[0] != 0]
@@ -687,7 +691,7 @@ def process_file(input_file):
 def main_cli():
     """커맨드라인 모드"""
     if len(sys.argv) < 2:
-        print("사용법: python3.11 graph_output.py <엑셀파일경로> [출력파일경로]")
+        print("사용법: python3.11 graph_output.py <데이터파일경로(.xlsx/.xls/.csv)> [출력파일경로]")
         sys.exit(1)
     
     input_file = sys.argv[1]
@@ -754,8 +758,9 @@ def main_gui():
             guide_title.pack(pady=(10, 5))
 
             guide_text = (
-                "• 엑셀 파일 형식: A열 = 토크(Nm), C열 = 각도(arc min)\n\n"
-                "• 헤더 없이 데이터만 포함되어야 합니다 (A열 = 0인 행은 제외)\n\n"
+                "• 파일 형식: Excel (.xlsx, .xls) 또는 CSV (.csv)\n\n"
+                "• 데이터 형식: 1열(A열) = 토크(Nm), 3열(C열) = 각도(arc min)\n\n"
+                "• 헤더 없이 데이터만 포함되어야 합니다 (1열 = 0인 행은 제외)\n\n"
                 "• 분석 결과: 백래쉬(Backlash), 토크 강성(Torsional Stiffness)\n\n"
                 "• 출력: Result 폴더에 PNG 그래프 + backlash_log.xlsx 저장"
             )
@@ -769,7 +774,7 @@ def main_gui():
             file_frame = ctk.CTkFrame(self.root)
             file_frame.pack(pady=12, padx=20, fill="x")
 
-            file_label = ctk.CTkLabel(file_frame, text="엑셀 파일:",
+            file_label = ctk.CTkLabel(file_frame, text="데이터 파일:",
                                      font=("Consolas", 20, "bold"))
             file_label.pack(side="left", padx=(10, 5))
 
@@ -810,7 +815,7 @@ def main_gui():
             self.open_result_btn.pack(side="left", padx=(5, 10), fill="x", expand=True)
 
             # 진행 상태 표시
-            self.status_label = ctk.CTkLabel(self.root, text="엑셀 파일을 선택해주세요.",
+            self.status_label = ctk.CTkLabel(self.root, text="데이터 파일을 선택해주세요.",
                                             font=("Consolas", 20))
             self.status_label.pack(pady=6)
 
@@ -829,8 +834,8 @@ def main_gui():
         def browse_file(self):
             """파일 선택 대화상자"""
             filename = filedialog.askopenfilename(
-                title="엑셀 파일 선택",
-                filetypes=[("Excel files", "*.xlsx *.xls"), ("All files", "*.*")]
+                title="데이터 파일 선택",
+                filetypes=[("Data files", "*.xlsx *.xls *.csv"), ("Excel files", "*.xlsx *.xls"), ("CSV files", "*.csv"), ("All files", "*.*")]
             )
             
             if filename:
